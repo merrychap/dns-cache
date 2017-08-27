@@ -8,6 +8,7 @@ import struct
 
 
 NAME_OFFSET = b'\xc0\x0c'
+PADDING = '11'
 
 
 def get_cur_time():
@@ -26,7 +27,7 @@ def get_qname(record, packet=None):
             if record[index] == 0:
                 break
             size = record[index]
-            if set_padding(bin(size)[2:])[:2] == '11':
+            if set_padding(bin(size)[2:])[:2] == PADDING:
                 offset = codecs.encode(record[index:index+2], 'hex').decode()
                 offset = int(bin(int(offset, 16))[4:], 2)
                 index, record = offset, packet

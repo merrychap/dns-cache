@@ -15,7 +15,7 @@ MAX_PORT = 65536
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', help='Port for listening connections')
-    parser.add_argument('-f', help='IP:port of forwader')
+    parser.add_argument('-f', help='IP:Port of a forwader. For example, 8.8.8.8:53')
 
     args = parser.parse_args()
 
@@ -32,9 +32,6 @@ def main():
     forwader = (socket.gethostbyname(forwader[0]), int(forwader[1]))
     try:
         IP(forwader[0])
-        # if forwader[0].startswith('127.') or forwader[0] == get_local_ip():
-        #     print('[-] Current machine specified as forwader. Error')
-        #     sys.exit()
     except ValueError:
         print('[-] Invalid forwader\'s IP')
         sys.exit()
@@ -50,6 +47,7 @@ def main():
     
     dns_server = DNS(port, forwader)
     dns_server.run()
+
 
 if __name__ == '__main__':
     try:
