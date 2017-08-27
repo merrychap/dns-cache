@@ -2,7 +2,7 @@
 
 ### General description
 This is implementation of a udp cached DNS server written in Python3.
-All written operations are correspond with RFC 1035
+All written operations are correspond to RFC 1035
 
 ### Requirements
 - Python 3.*
