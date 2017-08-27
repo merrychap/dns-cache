@@ -15,6 +15,7 @@ $ python3 dns.py [-h] [-p P] [-f F]
 ```
 
 List of arguments:
+
 Argument | Description
 -------- | ----------
 -h, --help | Show this help message and exit
