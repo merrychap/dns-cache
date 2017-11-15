@@ -1,7 +1,7 @@
-# Caching DNS Server implementation
+# Implementation of caching DNS Server
 
 ### General description
-This is implementation of a udp cached DNS server written in Python3.
+This is an implementation of a UDP caching DNS server written in Python3.
 All written operations are correspond to RFC 1035
 
 ### Requirements
@@ -9,7 +9,7 @@ All written operations are correspond to RFC 1035
 - IPy
 
 ### Usage
-To run the server use next command:
+To run a server use the next command:
 ```sh
 $ python3 dns.py [-h] [-p P] [-f F]
 ```
@@ -19,10 +19,10 @@ List of arguments:
 Argument | Description
 -------- | ----------
 -h, --help | Show this help message and exit
--p P | Port for running server
+-p P | Port for running a server
 -f F | Address of a forwarder written in format IP:Port. Port can be omitted
 
-For example, you run the server on 9090 port. Then you can make queries to it by typing next (get A records for google.com):
+For example, you run a server on 9090 port. Then you can make queries to it by typing the next command (get A records from google.com):
 ```sh
 dig +notcp @127.0.0.1 -p 9090 google.com A
 ```
