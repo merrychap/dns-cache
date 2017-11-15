@@ -1,4 +1,4 @@
-# Implementation of caching DNS Server
+# Implementation of a caching DNS Server
 
 ### General description
 This is an implementation of a UDP caching DNS server written in Python3.
