@@ -85,6 +85,7 @@ class DNS(BaseServer):
             return
         with self._lock:
             error = False
+            npacket = None
             sock = self._make_socket()
             try:
                 sock.sendto(packet, self._forwarder)
@@ -93,6 +94,10 @@ class DNS(BaseServer):
                 self._return_server_resp(self._make_error_packet(packet))
             finally:
                 sock.close()
+
+            if npacket is None:
+                npacket = self.create_dns_failure(packet)
+
             question = self._get_question(npacket)
             qnames = self._cache.push(qname, qtype, question, npacket)
             
@@ -128,3 +133,11 @@ class DNS(BaseServer):
             qtype = struct.pack('>H', _type)
             qclass = b'\x00\x01'
             return id + flags + question + answer + authority + addit + qname + qtype + qclass
+
+    def create_dns_failure(self, request):
+        TransactionID = request[:2]
+        flags = b'\x81\x82'       # Standard query response, Server failure
+        counters = b'\x00\x01\x00\x00\x00\x00\x00\x01'  # 1 query, 0 answerRR, 0 authRR, 1 additionalRR
+        query = self._get_question(request)
+        additional = b'\x00\x00\x29\x02\x00\x00\x00\x00\x00\x00\x00'
+        return TransactionID + flags + counters + query + additional
