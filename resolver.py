@@ -136,7 +136,7 @@ class DNS(BaseServer):
 
     def create_dns_failure(self, request):
         TransactionID = request[:2]
-        flags = b'\x81\x82'       # Standard query response, Server failure
+        flags = b'\x81\x83'       # Standard query response, Name doesn't exist
         counters = b'\x00\x01\x00\x00\x00\x00\x00\x01'  # 1 query, 0 answerRR, 0 authRR, 1 additionalRR
         query = self._get_question(request)
         additional = b'\x00\x00\x29\x02\x00\x00\x00\x00\x00\x00\x00'
