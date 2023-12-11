@@ -9,7 +9,7 @@ import struct
 
 NAME_OFFSET = b'\xc0\x0c'
 PADDING = '11'
-
+EXPIRE_TIME = 3600
 
 def get_cur_time():
     return int(time.time())
@@ -64,6 +64,12 @@ class Cache:
         is_outdated = False
         value = self._cache[qname][qtype]
 
+        # Previous request failed. We have our own EXPIRE_TIME
+        if value.sections == []:
+            if value.expires <= get_cur_time():
+                del value
+                return None
+
         for field in value.sections:
             cur_time = get_cur_time()
             new_ttl = field.start_time + field.ttl - cur_time
@@ -101,6 +107,7 @@ class CachedEntity:
 
         self._raw_packet = packet
         self.sections = []
+        self.expires = get_cur_time() + EXPIRE_TIME
         self._additional = b''
         self.head = b''
 

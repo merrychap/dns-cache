@@ -24,7 +24,7 @@ class BaseServer:
         self._port = port
 
         self._sock = self._make_socket(1000000)
-        self._max_workers = 5
+        self._max_workers = 100
         self._answer_queue = queue.Queue()
 
         print('[+] Server is configurated')

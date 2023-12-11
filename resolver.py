@@ -15,7 +15,7 @@ TYPES = {
     1: 'A', 2: 'NS', 3: 'MD', 4: 'MF', 5: 'CNAME',
     6: 'SOA', 7: 'MB', 8: 'MG', 9: 'MR', 10: 'NULL',
     11: 'WKS', 12: 'PTR', 13: 'HINFO', 14: 'MINFO', 
-    15: 'MX', 16: 'TXT'
+    15: 'MX', 16: 'TXT', 28: 'AAAA'
 }
 
 MIN_VALUE = 50000
@@ -63,7 +63,8 @@ class DNS(BaseServer):
         
         if not self._forwarder_corrupted:
             print("\n" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), end=" ")
-            print("-- [*] {} {} {}".format(addr[0], TYPES[qtype], qname), end=" ")
+            t = TYPES[qtype] if qtype in TYPES else qtype
+            print("-- [*] {} {} {}".format(addr[0], t, qname), end=" ")
             print('cache' if from_cache else 'forwarder')
             self._return_server_resp(response)
 
@@ -85,6 +86,7 @@ class DNS(BaseServer):
             return
         with self._lock:
             error = False
+            npacket = None
             sock = self._make_socket()
             try:
                 sock.sendto(packet, self._forwarder)
@@ -93,6 +95,10 @@ class DNS(BaseServer):
                 self._return_server_resp(self._make_error_packet(packet))
             finally:
                 sock.close()
+
+            if npacket is None:
+                npacket = self.create_dns_failure(packet)
+
             question = self._get_question(npacket)
             qnames = self._cache.push(qname, qtype, question, npacket)
             
@@ -128,3 +134,11 @@ class DNS(BaseServer):
             qtype = struct.pack('>H', _type)
             qclass = b'\x00\x01'
             return id + flags + question + answer + authority + addit + qname + qtype + qclass
+
+    def create_dns_failure(self, request):
+        TransactionID = request[:2]
+        flags = b'\x81\x83'       # Standard query response, Name doesn't exist
+        counters = b'\x00\x01\x00\x00\x00\x00\x00\x01'  # 1 query, 0 answerRR, 0 authRR, 1 additionalRR
+        query = self._get_question(request)
+        additional = b'\x00\x00\x29\x02\x00\x00\x00\x00\x00\x00\x00'
+        return TransactionID + flags + counters + query + additional
